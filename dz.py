@@ -44,23 +44,11 @@ def move_file(file: Path, category: str, root_dir:Path) -> None:
         target_dir.mkdir()
     file.replace(target_dir.joinpath(file.name))
 
-
-#MY UNPACK FUNCTION
-#def unpack(file:Path) -> None:
-#    for element in file.joinpath("Archieves").glob("**/*"):
-#        if element.is_file() and element.suffix in CATEGORIES["Archieves"]:
-#            shutil.unpack_archive(file.joinpath(element.name), file.joinpath(element.stem))
-
 def unpack(file:Path) -> None:
-    try:
-        #for e in file.glob('*Archives\*'):
-        #    if e.is_file() and e.suffix in CATEGORIES["Archieves"]:
-        #        shutil.unpack_archive(file.joinpath(e.name), file.joinpath(e.stem))
-        for elem in file.glob('*Archives\*'):
-            new_folder = file.parent.joinpath(file.stem)
-            shutil.unpack_archive(elem, new_folder)
-    except shutil.ReadError:
-        return None
+    archive_path = file.joinpath("Archieves")
+    for elem in archive_path.glob('*'):
+        new_folder = archive_path.joinpath(elem.stem)
+        shutil.unpack_archive(elem, new_folder)
     
 
 def sort_folder(path:Path, elements=[]) -> None:
@@ -77,8 +65,10 @@ def sort_folder(path:Path, elements=[]) -> None:
             category = get_category(element)
             move_file(element, category, path)
             normalize_file(element)
-            unpack(element)
-        elif element.is_dir():
+            #unpack(element)
+
+    for element in path.glob("**/*"):    
+        if element.is_dir():
             if element.name in CATEGORIES:
                 continue
             else:
@@ -96,8 +86,7 @@ def main() -> str:
         return "Folder does not exist"
     
     sort_folder(path)
-    
-    #unpack(path)
+    unpack(path)
 
     return "All ok"
 
